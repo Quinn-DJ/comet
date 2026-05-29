@@ -2,6 +2,8 @@
 
 `comet` is a CLI tool that uses AI to generate git commit message candidates from staged changes.
 
+中文文档：[`README.zh-CN.md`](./README.zh-CN.md)
+
 ## Features
 
 - CLI only, no GUI.
@@ -13,12 +15,27 @@
 
 ## Install
 
+Global install (recommended for end users):
+
+```bash
+npm install -g comet
+```
+
+If you are developing from source in this repository:
+
 ```bash
 npm install
 npm run build
+npm install -g .
 ```
 
-For local execution during development:
+After global install, run directly in any local git repository:
+
+```bash
+comet
+```
+
+For local execution during development (without global install):
 
 ```bash
 npm run dev -- --help
@@ -26,10 +43,10 @@ npm run dev -- --help
 
 ## Configuration
 
-Run interactive setup:
+Run interactive setup once:
 
 ```bash
-npx tsx src/cli.ts init
+comet init
 ```
 
 Default config path:
@@ -51,27 +68,27 @@ Config fields:
 Generate commit message candidates from staged changes:
 
 ```bash
-npx tsx src/cli.ts generate
+comet generate
 ```
 
 Default command also triggers generate:
 
 ```bash
-npx tsx src/cli.ts
+comet
 ```
 
 Machine-readable output:
 
 ```bash
-npx tsx src/cli.ts generate --json --count 2
+comet generate --json --count 2
 ```
 
 Manage config:
 
 ```bash
-npx tsx src/cli.ts config get
-npx tsx src/cli.ts config get apiKey
-npx tsx src/cli.ts config set model gpt-4.1-mini
+comet config get
+comet config get apiKey
+comet config set model gpt-4.1-mini
 ```
 
 After choosing one candidate:
