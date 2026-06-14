@@ -15,6 +15,15 @@ async function runGit(args: string[]): Promise<string> {
 }
 
 export async function ensureGitRepository(): Promise<void> {
+  // Check git binary is available
+  try {
+    await execFileAsync("git", ["--version"]);
+  } catch {
+    throw new Error(
+      "Git is not installed or not in PATH. Please install git first.",
+    );
+  }
+
   const inside = (await runGit(["rev-parse", "--is-inside-work-tree"])).trim();
   if (inside !== "true") {
     throw new Error("Current directory is not inside a git repository.");

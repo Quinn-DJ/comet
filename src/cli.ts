@@ -72,12 +72,18 @@ async function handleGenerate(options: { json?: boolean; count?: string }): Prom
   }
   const diff = await getStagedDiff(config.maxDiffChars);
   const files = await getStagedFileList();
+  process.stderr.write("Generating commit message candidates...\n");
   const candidates = await generateCommitCandidates({
     config,
     diff,
     files,
     count,
   });
+  if (candidates.length < count) {
+    console.error(
+      `Warning: only ${candidates.length} candidate(s) generated (requested ${count}).`,
+    );
+  }
   if (options.json) {
     printJson({ candidates });
     return;
@@ -108,14 +114,24 @@ configCommand
   .command("get")
   .argument("[key]", "config key")
   .option("--show-secrets", "show full secret values")
-  .action(async (key: string | undefined, options: { showSecrets?: boolean }) => {
+  .option("--json", "print JSON output")
+  .action(async (key: string | undefined, options: { showSecrets?: boolean; json?: boolean }) => {
     const config = await readConfig();
-    if (!key) {
+    if (options.json) {
       const output = {
         ...config,
         apiKey: options.showSecrets ? config.apiKey : maskSecret(config.apiKey),
       };
       printJson(output);
+      return;
+    }
+    if (!key) {
+      for (const k of ["apiKey", "baseURL", "model", "messageStyle", "locale", "maxDiffChars"] as const) {
+        const value = k === "apiKey" && !options.showSecrets
+          ? maskSecret(config[k])
+          : String(config[k]);
+        console.log(`${k} = ${value}`);
+      }
       return;
     }
     const configKey = parseConfigKey(key);
