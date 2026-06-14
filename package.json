@@ -10,11 +10,21 @@
     "lint": "tsc -p tsconfig.json --noEmit",
     "prepare": "npm run build"
   },
-  "keywords": [],
+  "keywords": ["git", "commit", "ai", "conventional-commits", "cli", "openai"],
   "author": "",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:Quinn-DJ/comet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Quinn-DJ/comet/issues"
+  },
   "type": "module",
   "private": false,
+  "files": [
+    "dist"
+  ],
   "bin": {
     "comet": "dist/cli.js"
   },
