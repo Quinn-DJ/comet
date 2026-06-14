@@ -10,7 +10,7 @@ const responseSchema = z.object({
     .max(3),
 });
 
-function extractJsonObject(text: string): string {
+export function extractJsonObject(text: string): string {
   const start = text.indexOf("{");
   const end = text.lastIndexOf("}");
   if (start === -1 || end === -1 || end <= start) {
@@ -19,7 +19,7 @@ function extractJsonObject(text: string): string {
   return text.slice(start, end + 1);
 }
 
-function parseCandidates(content: string): string[] {
+export function parseCandidates(content: string): string[] {
   const rawJson = extractJsonObject(content);
   let parsed: unknown;
   try {
@@ -41,6 +41,7 @@ export async function generateCommitCandidates(input: {
   const client = new OpenAI({
     apiKey: config.apiKey,
     baseURL: config.baseURL,
+    timeout: 60_000,
   });
 
   const prompt = buildCommitPrompt({
@@ -56,7 +57,13 @@ export async function generateCommitCandidates(input: {
     messages: [
       {
         role: "system",
-        content: "You are a precise engineering assistant for git commit messages.",
+        content: [
+          "You are a commit message generator that produces Conventional Commits output.",
+          "You analyze staged code diffs, classify changes into standard types,",
+          "infer scope from file paths, and write concise imperative summaries.",
+          "You always output valid JSON matching the requested schema with no extra text.",
+          "You never invent scopes that don't appear in the changed files.",
+        ].join(" "),
       },
       { role: "user", content: prompt },
     ],
